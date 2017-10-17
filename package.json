@@ -1,0 +1,14 @@
+{
+  "name": "woodpecker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "woodpecker.js",
+  "dependencies": {
+    "moment": "^2.19.1",
+    "request": "^2.83.0",
+    "request-promise-any": "^1.0.5"
+  },
+  "devDependencies": {},
+  "author": "Devin Smith",
+  "license": "MIT"
+}
