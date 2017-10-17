@@ -1,0 +1,3 @@
+- /rest/v1/prospects?search=second_name=John
+  - body: '{"status":{"status":"ERROR","code":"E_WRONG_PARAM","msg":"Wrong param [search]=second_name"}}' } }
+  - must be last_name. woodpecker docs partialy incorrect

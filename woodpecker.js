@@ -1,10 +1,13 @@
-const request = require('request-promise-any')
-const api = 'https://api.woodpecker.co/'
-const moment = require('moment')
+const
+	request = require('request-promise-any'),
+	moment = require('moment')
 
 class WoodPecker {
 	constructor(key) {
 		this.key = key
+
+		this.api = 'https://api.woodpecker.co/rest/v1/'
+
 		this.pstatus = {
 			REPLIED: 'REPLIED',
 			ACTIVE: 'ACTIVE',
@@ -16,18 +19,21 @@ class WoodPecker {
 			INVALID: 'INVALID',
 			REPLIED: 'REPLIED'
 		}
+
 		this.activity = {
 			OPENED: 'OPENED',
 			'NOT-OPENED': 'NOT-OPENED',
 			CLICKED: 'CLICKED',
 			'NOT-CLICKED': 'NOT-CLICKED'
 		}
+
 		this.interest = {
 			INTERESTED: 'INTERESTED',
 			'NOT-INTERESTED': 'NOT-INTERESTED',
 			'MAYBE-LATER': 'MAYBE-LATER',
 			'NOT-MARKED': 'NOT-MARKED'
 		}
+
 		this.cstatus = {
 			RUNNING: 'RUNNING',
 			PAUSED: 'PAUSED',
@@ -37,10 +43,11 @@ class WoodPecker {
 			STOPPED: 'STOPPED'
 		}
 	}
+
 	req(url, data) {
 		return new Promise((resolve, reject) => {
 			request({
-				url: api + url,
+				url: this.api + url,
 				headers: {
 					'Authorization': 'Basic ' + new Buffer(this.key).toString('base64') + ':X'
 				},
@@ -52,10 +59,24 @@ class WoodPecker {
 	prospects(s) {
 		return {
 			newest: () => {
-
+				return this.req('prospects/newest')
 			},
-			find: (s) => {
-
+			replied: () => {
+				return this.req('prospects/replied')
+			},
+			opened: () => {
+				return this.req('prospects/opened')
+			},
+			opened: () => {
+				return this.req('prospects/opened')
+			},
+			clicked: () => {
+				return this.req('prospects/clicked')
+			},
+			notContacted: () => {
+				return this.req('prospects/not_contacted')
+			},
+			find: s => {
 				if (s.campaign && s.campaigns) {
 					return Promise.reject('Only use `campaign` or `campaigns`, not both.')
 				}
@@ -139,13 +160,13 @@ class WoodPecker {
 							s.diff.type = 'updated'
 							break
 						case 'opened':
-							if (!s.activity != WoodPecker.activity.OPENED) {
+							if (s.activity != this.activity.OPENED) {
 								return Promise.reject('Opened activity requires the `activity` param')
 							}
 							s.diff.type = 'last_opened'
 							break
 						case 'clicked':
-							if (!s.activity) {
+							if (s.activity) {
 								return Promise.reject('Opened activity requires the `activity` param')
 							}
 							s.diff.type = 'last_clicked'
@@ -158,19 +179,128 @@ class WoodPecker {
 					s.diff = s.diff.type + s.diff.op + moment(s.diff.date)
 				}
 
+				let fieldMap = {
+					lastName: 'last_name',
+					firstName: 'first_name',
+					email: 'email',
+					company: 'company',
+					industry: 'industry',
+					website: 'website',
+					tags: 'tags',
+					title: 'title',
+					phone: 'phone',
+					address: 'address',
+					city: 'city',
+					state: 'state',
+					country: 'country',
+					snippet1: 'snippet1',
+					snippet2: 'snippet2',
+					snippet3: 'snippet3',
+					snippet4: 'snippet4',
+					snippet5: 'snippet5',
+					snippet6: 'snippet6',
+					snippet7: 'snippet7',
+					snippet8: 'snippet8',
+					snippet9: 'snippet9',
+					snippet10: 'snippet10',
+					snippet11: 'snippet11',
+					snippet12: 'snippet12',
+					snippet13: 'snippet13',
+					snippet14: 'snippet14',
+					snippet15: 'snippet15'
+				}
+
+				if (!s.search) {
+					s.search = ''
+					for (let f in fieldMap) {
+						if (s[f]) {
+							s.search += (s.search ? ',' : '') + fieldMap[f] + '=' + s[f]
+						}
+					}
+				}
+
+				for (let f in fieldMap) {
+					delete s[f]
+				}
+
+				let sortMap = {
+					id: 'id',
+					replied: 'last_replied',
+					status: 'status',
+					updated: 'updated',
+					lastName: 'last_name',
+					firstName: 'first_name',
+					email: 'email',
+					company: 'company',
+					industry: 'industry',
+					website: 'website',
+					tags: 'tags',
+					title: 'title',
+					phone: 'phone',
+					address: 'address',
+					city: 'city',
+					state: 'state',
+					country: 'country',
+					snippet1: 'snippet1',
+					snippet2: 'snippet2',
+					snippet3: 'snippet3',
+					snippet4: 'snippet4',
+					snippet5: 'snippet5',
+					snippet6: 'snippet6',
+					snippet7: 'snippet7',
+					snippet8: 'snippet8',
+					snippet9: 'snippet9',
+					snippet10: 'snippet10',
+					snippet11: 'snippet11',
+					snippet12: 'snippet12',
+					snippet13: 'snippet13',
+					snippet14: 'snippet14',
+					snippet15: 'snippet15',
+					opened: 'last_opened',
+					clicked: 'last_clicked'
+				}
+
+				if (!s.sort && s.$sort) {
+					s.sort = ''
+					for (let f in sortMap) {
+						if (s.$sort[f]) {
+							if (f == 'opened' && s.activity != this.activity.OPENED) {
+								return Promise.reject('Opened sort requires the `activity` param set to `OPENED`')
+							}
+							if (f == 'clicked' && s.activity != this.activity.CLICKED) {
+								return Promise.reject('Clicked sort requires the `activity` para set to `CLICKED`')
+							}
+
+							let direction
+							if (s.$sort[f] == 'DESC' || s.$sort[f] == -1 || s.$sort[f] === false || s.$sort[f] == '-') {
+								direction = '-'
+							} else {
+								direction = ''
+							}
+							s.sort += (s.sort ? ',' : '') + direction + sortMap[f]
+						}
+					}
+				}
+				delete s.$sort
+
 				if (s.limit) {
 					s.per_page = s.limit
 					delete s.limit
 				}
 
-				s.per_page = parseInt(s.per_page, 10)
-				s.page = parseInt(s.page, 10)
+				if (s.per_page) {
+					s.per_page = parseInt(s.per_page, 10)
+				}
+
+				if (s.page) {
+					s.page = parseInt(s.page, 10)
+				}
 
 				if (parseInt(s.per_page, 10) > 500) {
 					return Promise.reject('Maximum per page limit is 500. Default is 100.')
 				}
 
-				return this.req('rest/v1/prospects', s)
+				return this.req('prospects', s)
 			},
 			addToCampaign: () => {
 
@@ -179,11 +309,10 @@ class WoodPecker {
 
 			}
 		}
-
 	}
 
 	campaigns(s) {
-		return this.req('rest/v1/campaign_list', s)
+		return this.req('campaign_list', s)
 	}
 
 	prospect() {
