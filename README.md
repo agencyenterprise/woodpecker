@@ -1,11 +1,22 @@
-## Woodpecker.co API
+# Woodpecker.co API
+
+[![npm package](https://nodei.co/npm/woodpecker-api.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/woodpecker-api/)
+
+[![Build status](https://img.shields.io/travis/agencyenterprise/woodpecker/master.svg?style=flat-square)](https://travis-ci.org/agencyenterprise/woodpecker)
+[![Coverage](https://img.shields.io/codecov/c/github/agencyenterprise/woodpecker.svg?style=flat-square)](https://codecov.io/github/agencyenterprise/woodpecker?branch=master)
+[![Dependency Status](https://img.shields.io/david/agencyenterprise/woodpecker.svg?style=flat-square)](https://david-dm.org/agencyenterprise/woodpecker)
 
 ### Getting Started
-You will first need a woodpecker account, and your API key. See the Woodpecker API docs here. http://help.woodpecker.co/article/16-api-docs
 
-A basic request
-
+```sh
+npm i woodpecker-api
 ```
+
+You will first need a woodpecker account, and your API key. See the Woodpecker API docs here. http://help.woodpecker.co/article/16-api-docs.
+
+**A basic request**
+
+```js
 const WoodPecker = require('./woodpecker')('KEY')
 
 WoodPecker.prospects()
@@ -21,23 +32,20 @@ WoodPecker.prospects()
 	})
 ```
 
-### API Reference
+## API Reference
 
 
 
-### Examples
+## Examples
 
-
-#### Browsing prospects
-
-##### To get the list of prospects:
-```
+### To get the list of prospects:
+```js
 WoodPecker.prospects().find()
 ```
 
-##### To browse prospects from specific campaigns:
+### To browse prospects from specific campaigns:
 
-```
+```js
 WoodPecker.prospects()
 	.find({
 		campaign: 1
@@ -49,9 +57,9 @@ WoodPecker.prospects()
 	})
 ```
 
-##### To browse prospects of a specific status:
+### To browse prospects of a specific status:
 
-```
+```js
 WoodPecker.prospects()
 	.find({
 		status: WoodPecker.pstatus.REPLIED
@@ -65,9 +73,9 @@ WoodPecker.prospects()
 ```
 Valid prospect status are `ACTIVE` | `BLACKLIST` | `AUTOREPLIED` | `TO-CHECK` | `TO-REVIEW` | `BOUNCED` | `INVALID` | `REPLIED`.
 
-##### To browse prospects that performed a specific action:
+### To browse prospects that performed a specific action:
 
-```
+```js
 WoodPecker.prospects()
 	.find({
 		activity: WoodPecker.activity.OPENED
@@ -83,9 +91,9 @@ WoodPecker.prospects()
 Valid prospect actions are `OPENED` | `NOT-OPENED` | `CLICKED` | `NOT-CLICKED`.
 
 
-##### To browse interest rate:
+### To browse interest rate:
 
-```
+```js
 WoodPecker.prospects()
 	.find({
 		campaign: 10074,
@@ -95,9 +103,9 @@ WoodPecker.prospects()
 
 Valid interest values are `INTERESTED` | `NOT-INTERESTED` | `MAYBE-LATER` | `NOT-MARKED`.
 
-##### To browse a list of prospects who were or were not contacted:
+### To browse a list of prospects who were or were not contacted:
 
-```
+```js
 WoodPecker.prospects()
 	.find({
 		contacted: false
@@ -105,9 +113,9 @@ WoodPecker.prospects()
 ```
 Contacted is a boolean value.
 
-##### To browse results of prospects search:
+### To browse results of prospects search:
 
-```
+```js
 WoodPecker.prospects()
 	.find({
 		firstName: 'devin',
@@ -141,18 +149,18 @@ WoodPecker.prospects()
 	})
 ```
 
-##### To browse data of a specific prospect:
+### To browse data of a specific prospect:
 
-```
+```js
 WoodPecker.prospects()
 	.find({
 		id: 2225
 	})
 ```
 
-##### To browse a specific page of data search:
+### To browse a specific page of data search:
 
-```
+```js
 WoodPecker.prospects()
 	.find({
 		$page: 2
@@ -175,9 +183,9 @@ WoodPecker.prospects()
 Limit defaults to 100, with a maximum of 500.
 
 
-##### To sort results:
+### To sort results:
 
-```
+```js
 WoodPecker.prospects()
 	.find({
 		firstName: 'devin',
@@ -213,9 +221,9 @@ WoodPecker.prospects()
 	})
 ```
 
-##### To browse only the data updated after specific date (diff):
+### To browse only the data updated after specific date (diff):
 
-```
+```js
 WoodPecker.prospects()
 	.find({
 		updated: {
@@ -230,45 +238,42 @@ WoodPecker.prospects()
 	})
 ```
 
-##### Aliases / Shortcuts
+### Aliases / Shortcuts
 
 100 newest prospects
-```
+```js
 WoodPecker.newest()
 ```
 
 100 latest prospects who replied to the email
-```
+```js
 WoodPecker.replied()
 ```
 
 100 latest prospects who opened the email
-```
+```js
 WoodPecker.opened()
 ```
 
 100 latest prospects who clicked on the email
-```
+```js
 WoodPecker.clicked()
 ```
 
 100 latest prospects marked as not contacted
-```
+```js
 WoodPecker.notContacted()
 ```
 
+### To get campaign list:
 
-#### Browsing prospects
-
-##### To get campaign list:
-
-```
+```js
 WoodPecker.campaigns().find()
 ```
 
-##### To get campaign list filtered by status:
+### To get campaign list filtered by status:
 
-```
+```js
 WoodPecker.campaigns()
 	.find({
 		status: WoodPecker.cstatus.RUNNING
@@ -276,9 +281,9 @@ WoodPecker.campaigns()
 ```
 Valid campaign status are `RUNNING` | `PAUSED` | `COMPLETED` | `DRAFT` | `EDITED` | `STOPPED`.
 
-##### To get the details of a specific campaign:
+### To get the details of a specific campaign:
 
-```
+```js
 WoodPecker.campaigns()
 	.find({
 		id: 1
