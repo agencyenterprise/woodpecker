@@ -157,9 +157,16 @@ class WoodPecker {
 							date: s.diff.data.substr(1),
 							type: s.diff.type
 						}
-						if (s.diff.op != '<' && s.diff.op != '>') {
-							return Promise.reject('Invalid date operation', s.diff.op)
+					} else {
+						s.diff = {
+							op: s.diff.data.op,
+							date: s.diff.data.data,
+							type: s.diff.type
 						}
+					}
+
+					if (s.diff.op != '<' && s.diff.op != '>') {
+						return Promise.reject('Invalid date operation', s.diff.op)
 					}
 					switch (s.diff.type) {
 						case 'updated':
@@ -182,7 +189,7 @@ class WoodPecker {
 							break
 					}
 
-					s.diff = s.diff.type + s.diff.data.op + moment(s.diff.data.date).format('YYYY-MM-DDTHH:mm:ssZZ')
+					s.diff = s.diff.type + s.diff.op + moment(s.diff.date).format('YYYY-MM-DDTHH:mm:ssZZ')
 				}
 
 				let fieldMap = {
@@ -301,10 +308,6 @@ class WoodPecker {
 					return Promise.reject('Maximum per page limit is 500. Default is 100.')
 				}
 
-				if (!s.per_page) {
-					s.per_page = 100
-				}
-
 				if (s.per_page) {
 					s.per_page = parseInt(s.per_page, 10)
 				}
@@ -315,7 +318,7 @@ class WoodPecker {
 				}
 
 				if (s.$skip) {
-					s.page = parseInt(Math.floor(s.$skip / s.per_page), 10)
+					s.page = parseInt(Math.floor(s.$skip / (s.per_page || 100)), 10)
 					delete s.$skip
 				}
 

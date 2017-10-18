@@ -1,14 +1,15 @@
 const WoodPecker = require('./woodpecker')(process.env.WOODPECKER_KEY)
 
-/*WoodPecker.prospects().find({
-	per_page: 1
+WoodPecker.prospects().find({
+	opened: '>2017-01-01',
+	activity: WoodPecker.activity.OPENED
 })
 .then(d => {
 	console.log('good', d)
 })
 .catch(e => {
 	console.log('error', e)
-})*/
+})
 
 
 let tests = () => {
