@@ -1,5 +1,5 @@
 if (!process.env.WOODPECKER_KEY) {
-  throw new Exception('Tests require a woodpecker api key')
+  throw 'Tests require a woodpecker api key'
 }
 
 const
@@ -8,17 +8,23 @@ const
 
 describe('Woodpecker', function() {
   this.timeout(10000)
-  let campaign
+
+  var campaign = 1
+  before(() => {
+    return new Promise((resolve, reject) => {
+      Woodpecker.campaigns().find()
+        .then(d => {
+          console.log('campaign', d[0])
+          campaign = d[0].id
+          resolve()
+        })
+        .catch(reject)
+    })
+  })
+
   describe('#campaigns', () => {
     it('should find a campaign', () => {
-      return new Promise((resolve, reject) => {
-        Woodpecker.campaigns().find()
-          .then(d => {
-            campaign = d.id
-            resolve()
-          })
-          .catch(reject)
-      })
+      return Woodpecker.campaigns().find()
     })
 
     it('should find running campaigns', () => {
@@ -413,10 +419,12 @@ describe('Woodpecker', function() {
         		email: 'a' + Math.random() * 1000 + '@somedomain.com'
         	})
         	.then(d => {
-            Woodpecker.prospects()
-            	.blacklist(d.prospects[0].id)
-              .then(resolve)
-              .catch(reject)
+            setTimeout(() => {
+              Woodpecker.prospects()
+              	.blacklist(d.prospects[0].id)
+                .then(resolve)
+                .catch(reject)
+            }, 1000)
         	})
         	.catch(reject)
         })
@@ -431,10 +439,12 @@ describe('Woodpecker', function() {
             email: 'a' + Math.random() * 1000 + '@somedomain.com'
           })
           .then(d => {
-            Woodpecker.prospects()
-              .blacklist(d.prospects[0].email)
-              .then(resolve)
-              .catch(reject)
+            setTimeout(() => {
+              Woodpecker.prospects()
+                .blacklist(d.prospects[0].email)
+                .then(resolve)
+                .catch(reject)
+            }, 1000)
           })
           .catch(reject)
         })
@@ -449,15 +459,17 @@ describe('Woodpecker', function() {
             email: 'a' + Math.random() * 1000 + '@somedomain.com'
           })
           .then(d => {
-            Woodpecker.prospects()
-              .edit({
-                id: d.prospects[0].id,
-                firstName: 'ms',
-                lastName: 'ms test',
-                email: d.prospects[0].email
-              })
-              .then(resolve)
-              .catch(reject)
+            setTimeout(() => {
+              Woodpecker.prospects()
+                .edit({
+                  id: d.prospects[0].id,
+                  firstName: 'ms',
+                  lastName: 'ms test',
+                  email: d.prospects[0].email
+                })
+                .then(resolve)
+                .catch(reject)
+            }, 1000)
           })
           .catch(reject)
         })
@@ -472,10 +484,12 @@ describe('Woodpecker', function() {
             email: 'a' + Math.random() * 1000 + '@somedomain.com'
           })
           .then(d => {
-            Woodpecker.prospects()
-              .delete(d.prospects[0].email)
-              .then(resolve)
-              .catch(reject)
+            setTimeout(() => {
+              Woodpecker.prospects()
+                .delete(d.prospects[0].email)
+                .then(resolve)
+                .catch(reject)
+            }, 1000)
           })
           .catch(reject)
         })
@@ -490,10 +504,12 @@ describe('Woodpecker', function() {
             email: 'a' + Math.random() * 1000 + '@somedomain.com'
           })
           .then(d => {
-            Woodpecker.prospects()
-              .delete(d.prospects[0].id)
-              .then(resolve)
-              .catch(reject)
+            setTimeout(() => {
+              Woodpecker.prospects()
+                .delete(d.prospects[0].id)
+                .then(resolve)
+                .catch(reject)
+            }, 1000)
           })
           .catch(reject)
         })
@@ -508,10 +524,12 @@ describe('Woodpecker', function() {
             email: 'a' + Math.random() * 1000 + '@somedomain.com'
           })
           .then(d => {
-            Woodpecker.prospects()
-              .delete(d.prospects[0].id)
-              .then(resolve)
-              .catch(reject)
+            setTimeout(() => {
+              Woodpecker.prospects()
+                .delete(d.prospects[0].id)
+                .then(resolve)
+                .catch(reject)
+            }, 1000)
           })
           .catch(reject)
         })
@@ -532,28 +550,19 @@ describe('Woodpecker', function() {
     })
 
     it('should add or update multiple', () => {
-      return new Promise((resolve, reject) => {
-        Woodpecker.prospects()
-          .edit([
-            {
-              firstName: 'mr2',
-              lastName: 'mr test2',
-              email: 'a' + Math.random() * 1000 + '@somedomain.com'
-            },
-            {
-              firstName: 'mr3',
-              lastName: 'mr test3',
-              email: 'a' + Math.random() * 1000 + '@somedomain.com'
-            }
-          ])
-          .then(d => {
-            Woodpecker.prospects()
-              .delete(d.prospects[0].id)
-              .then(resolve)
-              .catch(reject)
-          })
-          .catch(reject)
-        })
+      return Woodpecker.prospects()
+        .edit([
+          {
+            firstName: 'mr2',
+            lastName: 'mr test2',
+            email: 'a' + Math.random() * 1000 + '@somedomain.com'
+          },
+          {
+            firstName: 'mr3',
+            lastName: 'mr test3',
+            email: 'a' + Math.random() * 1000 + '@somedomain.com'
+          }
+        ])
     })
   })
 

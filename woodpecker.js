@@ -354,7 +354,6 @@ class Woodpecker {
           }
         }
 
-
         if (s.id && s.per_page) {
           return Promise.reject('Can not limit when searching by id')
         }
