@@ -339,7 +339,7 @@ class WoodPecker {
 				return this.req('prospects', s)
 			},
 
-			edit: (prospects, campaign, update) => {
+			/*edit: (prospects, campaign, update) => {
 				let data = {
 					prospects: (prospects instanceof Array) ? prospects : [prospects],
 					update: true//update ? true : false
@@ -371,7 +371,7 @@ class WoodPecker {
 				}
 
 				return this.req('stop_followups', data)
-			}
+			}*/
 		}
 
 		p.add = p.edit

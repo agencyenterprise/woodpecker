@@ -9,5 +9,5 @@ env:
 install:
   - npm install -g codecov istanbul mocha
 script:
-  - istanbul cover mocha --reporter lcovonly -- -R spec
+  - istanbul cover --reporter=lcovonly mocha test -- -R spec
   - codecov
