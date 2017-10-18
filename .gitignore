@@ -3,3 +3,4 @@ node_modules/
 db/*
 debug.sh
 test.sh
+debug.js

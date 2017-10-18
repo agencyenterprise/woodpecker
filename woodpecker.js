@@ -44,7 +44,7 @@ class WoodPecker {
 		}
 	}
 
-	req(url, data) {
+	req(url, data, method) {
 		return new Promise((resolve, reject) => {
 			if (!this.key) {
 				return reject('API key is required. WoodPecker = require(\'woodpecker\')(KEY)')
@@ -54,8 +54,10 @@ class WoodPecker {
 				headers: {
 					'Authorization': 'Basic ' + new Buffer(this.key).toString('base64') + ':X'
 				},
-				qs: data
+				qs: data,
+				method: method || 'GET'
 			}).then(d => {
+				console.log(d)
 				try {
 					d = JSON.parse(d)
 				} catch (e) {}
@@ -65,6 +67,38 @@ class WoodPecker {
 	}
 
 	prospects(s) {
+
+		let fieldMap = {
+			lastName: 'last_name',
+			firstName: 'first_name',
+			email: 'email',
+			company: 'company',
+			industry: 'industry',
+			website: 'website',
+			tags: 'tags',
+			title: 'title',
+			phone: 'phone',
+			address: 'address',
+			city: 'city',
+			state: 'state',
+			country: 'country',
+			snippet1: 'snippet1',
+			snippet2: 'snippet2',
+			snippet3: 'snippet3',
+			snippet4: 'snippet4',
+			snippet5: 'snippet5',
+			snippet6: 'snippet6',
+			snippet7: 'snippet7',
+			snippet8: 'snippet8',
+			snippet9: 'snippet9',
+			snippet10: 'snippet10',
+			snippet11: 'snippet11',
+			snippet12: 'snippet12',
+			snippet13: 'snippet13',
+			snippet14: 'snippet14',
+			snippet15: 'snippet15'
+		}
+
 		let p = {
 			newest: () => {
 				return this.req('prospects/newest')
@@ -192,37 +226,6 @@ class WoodPecker {
 					s.diff = s.diff.type + s.diff.op + moment(s.diff.date).format('YYYY-MM-DDTHH:mm:ssZZ')
 				}
 
-				let fieldMap = {
-					lastName: 'last_name',
-					firstName: 'first_name',
-					email: 'email',
-					company: 'company',
-					industry: 'industry',
-					website: 'website',
-					tags: 'tags',
-					title: 'title',
-					phone: 'phone',
-					address: 'address',
-					city: 'city',
-					state: 'state',
-					country: 'country',
-					snippet1: 'snippet1',
-					snippet2: 'snippet2',
-					snippet3: 'snippet3',
-					snippet4: 'snippet4',
-					snippet5: 'snippet5',
-					snippet6: 'snippet6',
-					snippet7: 'snippet7',
-					snippet8: 'snippet8',
-					snippet9: 'snippet9',
-					snippet10: 'snippet10',
-					snippet11: 'snippet11',
-					snippet12: 'snippet12',
-					snippet13: 'snippet13',
-					snippet14: 'snippet14',
-					snippet15: 'snippet15'
-				}
-
 				if (!s.search) {
 					s.search = ''
 					for (let f in fieldMap) {
@@ -336,25 +339,31 @@ class WoodPecker {
 
 				return this.req('prospects', s)
 			},
-			addToCampaign: () => {
 
-			},
-			addToList: () => {
-
-			},
 			edit: (prospects, campaign, update) => {
 				let data = {
-					prospects: prospects,
-					update: update ? true : false
+					prospects: (prospects instanceof Array) ? prospects : [prospects],
+					update: true//update ? true : false
 				}
+
+				for (let p of data.prospects) {
+					for (let f in fieldMap) {
+						if (fieldMap[f] == f) continue
+						if (p[f]) {
+							p[fieldMap[f]] = p[f]
+							delete p[f]
+						}
+					}
+				}
+				console.log(data)
 
 				if (campaign) {
 					data.campaign = {
 						campaign_id: campaign
 					}
-					return this.req('add_prospects_campaign', data)
+					return this.req('add_prospects_campaign', data, 'POST')
 				} else {
-					return this.req('add_prospects_list', data)
+					return this.req('add_prospects_list', data, 'POST')
 				}
 			},
 			blacklist: prospects => {
