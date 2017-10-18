@@ -6,20 +6,27 @@
 [![Coverage](https://img.shields.io/codecov/c/github/agencyenterprise/woodpecker.svg?style=flat-square)](https://codecov.io/github/agencyenterprise/woodpecker?branch=master)
 [![Dependency Status](https://img.shields.io/david/agencyenterprise/woodpecker.svg?style=flat-square)](https://david-dm.org/agencyenterprise/woodpecker)
 
+---
+
 ### Getting Started
 
+You will first need a [Woodpecker](https://woodpecker.co/) account, and your API key. See the Woodpecker API docs here. http://help.woodpecker.co/article/16-api-docs.
+
+
+### Installation
 ```sh
 npm i woodpecker-api
 ```
 
-You will first need a woodpecker account, and your API key. See the Woodpecker API docs here. http://help.woodpecker.co/article/16-api-docs.
 
-**A basic request**
+### Usage
+
+The API uses Promises for all interaction.
 
 ```js
-const WoodPecker = require('./woodpecker')('KEY')
+const Woodpecker = require('woodpecker-api')('KEY')
 
-WoodPecker.prospects()
+Woodpecker.prospects()
 	.find({
 		firstName: 'd',
 		$limit: 1
@@ -32,26 +39,83 @@ WoodPecker.prospects()
 	})
 ```
 
+---
+
 ## API Reference
 
+### prospects.find({query})
 
+- **id**: Find by id
+- **ids**: Find by an array of ids
+- **campaign**: Find by a specific `campaign_id`
+- **campaigns**: Find by an array of `campaign_id`s
+- **status**: Find by prospect status. Valid values: `ACTIVE` | `BLACKLIST` | `AUTOREPLIED` | `TO-CHECK` | `TO-REVIEW` | `BOUNCED` | `INVALID` | `REPLIED`
+- **activity**: Find by prospect action. Valid values: `OPENED` | `NOT-OPENED` | `CLICKED` | `NOT-CLICKED`
+- **interest**: Find by prospect interest. Valid values: `INTERESTED` | `NOT-INTERESTED` | `MAYBE-LATER` | `NOT-MARKED`
+- **updated**: Find where dates are greater then or less than an updated date. Accepts a diff object `{op: '<', date: new Date}` or a string `>2017-01-01`.
+- **opened**: Find where dates are greater then or less than an opened date. Accepts a diff object `{op: '<', date: new Date}` or a string `>2017-01-01`.
+- **clicked**: Find where dates are greater then or less than a clicked date. Accepts a diff object `{op: '<', date: new Date}` or a string `>2017-01-01`.
+- **contacted**: If the user has been contacted or not. `true` or `false`
+- **firstName**: Search within the prospects `first_name`
+- **lastName**: Search within the prospects `last_name`. *note that the Woodpecker docs are incorrect. `second_name` is invalid.*
+- **email**: Search within the prospects `email`
+- **company**: Search within the prospects `company`
+- **industry**: Search within the prospects `industry`
+- **website**: Search within the prospects `website`
+- **tags**: Search within the prospects `tags`
+- **title**: Search within the prospects `title`
+- **phone**: Search within the prospects `phone`
+- **address**: Search within the prospects `address`
+- **city**: Search within the prospects `city`
+- **state**: Search within the prospects `state`
+- **country**: Search within the prospects `country`
+- **snippet1**: Search within the prospects `snippet1`. Can use `snippet1` up to `snippet15`
+- **$limit**: Sets the maximum results per page. Defaults to `100`, max of `500`
+- **$page**: The page to display
+- **$skip**: Amount of results to skip. To be used with `$limit` instead of `$page`
+- **$sort**: Sort order object. Can be `1`, `ASC` | `true` | `+`, or `-1`, `DESC` | `false` | `-`. Defaults to `ASC`. Available fields:
+  - `id`, `firstName`, `lastName`, `replied`, `status`, `updated`, `email`, `company`, `industry`, `website`, `tags`, `title`, `phone`, `address`, `city`, `state`, `country`, `opened` (requires activity.OPENED), `clicked` (requires activity.CLICKED)
+
+### prospects.find().newest()
+- 100 newest prospects
+
+### prospects.find().replied()
+- 100 latest prospects who replied to the email
+
+### prospects.find().opened()
+- 100 latest prospects who opened the email
+
+### prospects.find().clicked()
+- 100 latest prospects who clicked on the email`
+
+### prospects.find().notContacted()
+100 latest prospects marked as not contacted
+
+
+### campaigns.find({query})
+
+- **id**: Find by id
+- **ids**: Find by an array of ids
+- **status**: Find by specific status. Valid values: `RUNNING` | `PAUSED` | `COMPLETED` | `DRAFT` | `EDITED` | `STOPPED`
+
+---
 
 ## Examples
 
 ### To get the list of prospects:
 ```js
-WoodPecker.prospects().find()
+Woodpecker.prospects().find()
 ```
 
 ### To browse prospects from specific campaigns:
 
 ```js
-WoodPecker.prospects()
+Woodpecker.prospects()
 	.find({
 		campaign: 1
 	})
 
-WoodPecker.prospects()
+Woodpecker.prospects()
 	.find({
 		campaigns: [1,2,3]
 	})
@@ -60,63 +124,55 @@ WoodPecker.prospects()
 ### To browse prospects of a specific status:
 
 ```js
-WoodPecker.prospects()
+Woodpecker.prospects()
 	.find({
-		status: WoodPecker.pstatus.REPLIED
+		status: Woodpecker.pstatus.REPLIED
 	})
 
-WoodPecker.prospects()
+Woodpecker.prospects()
 	.find({
 		campaign: 22,
-		status: WoodPecker.pstatus['TO-CHECK']
+		status: Woodpecker.pstatus['TO-CHECK']
 	})
 ```
-Valid prospect status are `ACTIVE` | `BLACKLIST` | `AUTOREPLIED` | `TO-CHECK` | `TO-REVIEW` | `BOUNCED` | `INVALID` | `REPLIED`.
-
 ### To browse prospects that performed a specific action:
 
 ```js
-WoodPecker.prospects()
+Woodpecker.prospects()
 	.find({
-		activity: WoodPecker.activity.OPENED
+		activity: Woodpecker.activity.OPENED
 	})
 
-WoodPecker.prospects()
+Woodpecker.prospects()
 	.find({
-		activity: WoodPecker.activity.OPENED,
-		status: WoodPecker.status.REPLIED
+		activity: Woodpecker.activity.OPENED,
+		status: Woodpecker.status.REPLIED
 	})
 ```
-
-Valid prospect actions are `OPENED` | `NOT-OPENED` | `CLICKED` | `NOT-CLICKED`.
-
 
 ### To browse interest rate:
 
 ```js
-WoodPecker.prospects()
+Woodpecker.prospects()
 	.find({
 		campaign: 10074,
-		interest: WoodPecker.interest.INTERESTED
+		interest: Woodpecker.interest.INTERESTED
 	})
 ```
-
-Valid interest values are `INTERESTED` | `NOT-INTERESTED` | `MAYBE-LATER` | `NOT-MARKED`.
 
 ### To browse a list of prospects who were or were not contacted:
 
 ```js
-WoodPecker.prospects()
+Woodpecker.prospects()
 	.find({
 		contacted: false
 	})
 ```
-Contacted is a boolean value.
 
 ### To browse results of prospects search:
 
 ```js
-WoodPecker.prospects()
+Woodpecker.prospects()
 	.find({
 		firstName: 'devin',
 		lastName: 'smith',
@@ -130,29 +186,14 @@ WoodPecker.prospects()
 		address: '',
 		city: '',
 		state: '',
-		country: '',
-		snippet1: '',
-		snippet2: '',
-		snippet3: '',
-		snippet4: '',
-		snippet5: '',
-		snippet6: '',
-		snippet7: '',
-		snippet8: '',
-		snippet9: '',
-		snippet10: '',
-		snippet11: '',
-		snippet12: '',
-		snippet13: '',
-		snippet14: '',
-		snippet15: ''
+		country: ''
 	})
 ```
 
 ### To browse data of a specific prospect:
 
 ```js
-WoodPecker.prospects()
+Woodpecker.prospects()
 	.find({
 		id: 2225
 	})
@@ -161,38 +202,36 @@ WoodPecker.prospects()
 ### To browse a specific page of data search:
 
 ```js
-WoodPecker.prospects()
+Woodpecker.prospects()
 	.find({
 		$page: 2
 	})
-WoodPecker.prospects()
+Woodpecker.prospects()
 	.find({
 		$limit: 20
 	})
-WoodPecker.prospects()
+Woodpecker.prospects()
 	.find({
 		$skip: 100
 	})
-WoodPecker.prospects()
+Woodpecker.prospects()
 	.find({
 		$page: 2,
 		$limit: 20,
-		status: WoodPecker.pstatus.REPLIED
+		status: Woodpecker.pstatus.REPLIED
 	})
 ```
-Limit defaults to 100, with a maximum of 500.
-
 
 ### To sort results:
 
 ```js
-WoodPecker.prospects()
+Woodpecker.prospects()
 	.find({
 		firstName: 'devin',
 		sort: '+first_name,+id,+country',
 	})
 
-WoodPecker.prospects()
+Woodpecker.prospects()
 	.find({
 		firstName: 'devin',
 		$sort: {
@@ -224,7 +263,7 @@ WoodPecker.prospects()
 ### To browse only the data updated after specific date (diff):
 
 ```js
-WoodPecker.prospects()
+Woodpecker.prospects()
 	.find({
 		updated: {
 			op: '>',
@@ -232,7 +271,7 @@ WoodPecker.prospects()
 		}
 	})
 
-WoodPecker.prospects()
+Woodpecker.prospects()
 	.find({
 		opened: '>2017-01-01'
 	})
@@ -240,61 +279,48 @@ WoodPecker.prospects()
 
 ### Aliases / Shortcuts
 
-100 newest prospects
 ```js
-WoodPecker.newest()
-```
+Woodpecker.prospects().newest()
 
-100 latest prospects who replied to the email
-```js
-WoodPecker.replied()
-```
+Woodpecker.prospects().replied()
 
-100 latest prospects who opened the email
-```js
-WoodPecker.opened()
-```
+Woodpecker.prospects().opened()
 
-100 latest prospects who clicked on the email
-```js
-WoodPecker.clicked()
-```
+Woodpecker.prospects().clicked()
 
-100 latest prospects marked as not contacted
-```js
-WoodPecker.notContacted()
+Woodpecker.prospects().notContacted()
 ```
 
 ### To get campaign list:
 
 ```js
-WoodPecker.campaigns().find()
+Woodpecker.campaigns().find()
 ```
 
 ### To get campaign list filtered by status:
 
 ```js
-WoodPecker.campaigns()
+Woodpecker.campaigns()
 	.find({
-		status: WoodPecker.cstatus.RUNNING
+		status: Woodpecker.cstatus.RUNNING
 	})
 ```
-Valid campaign status are `RUNNING` | `PAUSED` | `COMPLETED` | `DRAFT` | `EDITED` | `STOPPED`.
 
 ### To get the details of a specific campaign:
 
 ```js
-WoodPecker.campaigns()
+Woodpecker.campaigns()
 	.find({
 		id: 1
 	})
 
-WoodPecker.campaigns()
+Woodpecker.campaigns()
 	.find({
 		ids: [1,2]
 	})
 ```
 
+---
 
-#### Adding, editing, blacklisting
+### Adding, editing, blacklisting
 Coming soon...API doesnt seem to be responding like expected.

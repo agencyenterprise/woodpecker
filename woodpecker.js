@@ -2,7 +2,7 @@ const
 	request = require('request-promise-any'),
 	moment = require('moment')
 
-class WoodPecker {
+class Woodpecker {
 	constructor(key) {
 		this.key = key
 
@@ -47,7 +47,7 @@ class WoodPecker {
 	req(url, data, method) {
 		return new Promise((resolve, reject) => {
 			if (!this.key) {
-				return reject('API key is required. WoodPecker = require(\'woodpecker\')(KEY)')
+				return reject('API key is required. Woodpecker = require(\'woodpecker-api\')(KEY)')
 			}
 			request({
 				url: this.api + url,
@@ -399,5 +399,5 @@ class WoodPecker {
 }
 
 module.exports = key => {
-	return new WoodPecker(key)
+	return new Woodpecker(key)
 }
