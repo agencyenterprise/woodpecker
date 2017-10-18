@@ -8,7 +8,7 @@ class Woodpecker {
 
     this.api = 'https://api.woodpecker.co/rest/v1/'
 
-    this.pstatus = {
+    this.prospectStatus = {
       REPLIED: 'REPLIED',
       ACTIVE: 'ACTIVE',
       BLACKLIST: 'BLACKLIST',
@@ -34,13 +34,26 @@ class Woodpecker {
       'NOT-MARKED': 'NOT-MARKED'
     }
 
-    this.cstatus = {
+    this.campaignStatus = {
       RUNNING: 'RUNNING',
       PAUSED: 'PAUSED',
       COMPLETED: 'COMPLETED',
       DRAFT: 'DRAFT',
       EDITED: 'EDITED',
       STOPPED: 'STOPPED'
+    }
+
+    this.webhookEvent = {
+      REPLIED: 'prospect_replied',
+      CLICKED: 'link_clicked',
+      OPENED: 'email_opened',
+      BOUNCED: 'prospect_bounced',
+      INVALID: 'prospect_invalid',
+      INTERESTED: 'prospect_interested',
+      'MAYBE-LATER': 'prospect_maybe_later',
+      'NOT-INTERESTED': 'prospect_not_interested',
+      AUTOREPLIED: 'prospect_autoreplied',
+      FOLLOWUP: 'followup_after_autoreply'
     }
   }
 
@@ -456,6 +469,17 @@ class Woodpecker {
         }
 
         return this.req('campaign_list', s)
+      }
+    }
+  }
+
+  webhooks() {
+    return {
+      subscribe: (url, event) => {
+        return this.req('webhooks/subscribe', {target_url: url, event: event}, 'POST')
+      },
+      unsubscribe: (url, event) => {
+        return this.req('webhooks/unsubscribe', {target_url: url, event: event}, 'POST')
       }
     }
   }

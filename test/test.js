@@ -24,7 +24,7 @@ describe('Woodpecker', function() {
     it('should find running campaigns', () => {
       return Woodpecker.campaigns()
         .find({
-          status: Woodpecker.cstatus.RUNNING
+          status: Woodpecker.campaignStatus.RUNNING
         })
     })
 
@@ -45,7 +45,7 @@ describe('Woodpecker', function() {
     it('should find by status', () => {
       return Woodpecker.campaigns()
         .find({
-          status: Woodpecker.cstatus.RUNNING
+          status: Woodpecker.campaignStatus.RUNNING
         })
     })
   })
@@ -99,21 +99,21 @@ describe('Woodpecker', function() {
 
     it('should find replied status prospects', () => {
       return Woodpecker.prospects().find({
-        status: Woodpecker.pstatus.REPLIED
+        status: Woodpecker.prospectStatus.REPLIED
       })
     })
 
     it('should find to check status', () => {
       return Woodpecker.prospects().find({
         campaign: 1,
-        status: Woodpecker.pstatus['TO-CHECK']
+        status: Woodpecker.prospectStatus['TO-CHECK']
       })
     })
 
     it('should find paused status', () => {
       return Woodpecker.prospects().find({
         campaign: 1,
-        status: Woodpecker.pstatus['PAUSED']
+        status: Woodpecker.prospectStatus['PAUSED']
       })
     })
 
@@ -126,7 +126,7 @@ describe('Woodpecker', function() {
     it('should find opened and replied', () => {
       return Woodpecker.prospects().find({
         activity: Woodpecker.activity.OPENED,
-        status: Woodpecker.pstatus.REPLIED
+        status: Woodpecker.prospectStatus.REPLIED
       })
     })
 
@@ -193,7 +193,7 @@ describe('Woodpecker', function() {
       return Woodpecker.prospects().find({
         $page: 2,
         $limit: 20,
-        status: Woodpecker.pstatus.REPLIED
+        status: Woodpecker.prospectStatus.REPLIED
       })
     })
 
@@ -554,6 +554,16 @@ describe('Woodpecker', function() {
           })
           .catch(reject)
         })
+    })
+  })
+
+  describe('#webhooks', () => {
+    it('should subscribe to a webhook event', () => {
+      return Woodpecker.webhooks().subscribe('https://woodpecker-api-webhook-test.herokuapp.com/hook', Woodpecker.webhookEvent.REPLIED)
+    })
+
+    it('should unsubscribe to a webhook event', () => {
+      return Woodpecker.webhooks().unsubscribe('https://woodpecker-api-webhook-test.herokuapp.com/hook', Woodpecker.webhookEvent.REPLIED)
     })
   })
 

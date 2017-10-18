@@ -112,6 +112,12 @@ Woodpecker.prospects()
 - **ids**: Find by an array of ids
 - **status**: Find by specific status. Valid values: `RUNNING` | `PAUSED` | `COMPLETED` | `DRAFT` | `EDITED` | `STOPPED`
 
+### webhooks().subscribe(URL, EVENT)
+- Subscribes to an event for the given `URL` and `EVENT`. Valid event values: `REPLIED`, `CLICKED`, `OPENED`, `BOUNCED`, `INVALID`, `INTERESTED`, `MAYBE-LATER`, `NOT-INTERESTED`, `AUTOREPLIED`, `FOLLOWUP`
+
+### webhooks().unsubscribe(URL, EVENT)
+- Same as above, but unsubscribes
+
 ---
 
 ## Examples
@@ -140,13 +146,13 @@ Woodpecker.prospects()
 ```js
 Woodpecker.prospects()
   .find({
-    status: Woodpecker.pstatus.REPLIED
+    status: Woodpecker.prospectStatus.REPLIED
   })
 
 Woodpecker.prospects()
   .find({
     campaign: 22,
-    status: Woodpecker.pstatus['TO-CHECK']
+    status: Woodpecker.prospectStatus['TO-CHECK']
   })
 ```
 ### To browse prospects that performed a specific action:
@@ -232,7 +238,7 @@ Woodpecker.prospects()
   .find({
     $page: 2,
     $limit: 20,
-    status: Woodpecker.pstatus.REPLIED
+    status: Woodpecker.prospectStatus.REPLIED
   })
 ```
 
@@ -298,7 +304,7 @@ Woodpecker.campaigns().find()
 ```js
 Woodpecker.campaigns()
   .find({
-    status: Woodpecker.cstatus.RUNNING
+    status: Woodpecker.campaignStatus.RUNNING
   })
 ```
 
@@ -366,4 +372,10 @@ Woodpecker.prospects().delete('mrtest@somedomain.com', 2034)
 
 ```js
 Woodpecker.prospects().blacklist('mrtest@somedomain.com')
+```
+
+### To subscribe to a webhook event
+
+```js
+Woodpecker.webhooks().subscribe('https://domain/page', Woodpecker.webhookEvent.REPLIED)
 ```
