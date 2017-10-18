@@ -1,4 +1,14 @@
-let WoodPecker = require('./woodpecker')(process.env.WOODPECKER_KEY)
+const WoodPecker = require('./woodpecker')(process.env.WOODPECKER_KEY)
+
+/*WoodPecker.prospects().find({
+	per_page: 1
+})
+.then(d => {
+	console.log('good', d)
+})
+.catch(e => {
+	console.log('error', e)
+})*/
 
 
 let tests = () => {
@@ -83,14 +93,6 @@ let tests = () => {
 	WoodPecker.prospects()
 		.find({
 			contact: false
-		})
-		.then(r => {
-			console.log(r)
-		})
-
-	WoodPecker.prospects()
-		.find({
-			search: 'search'
 		})
 		.then(r => {
 			console.log(r)
@@ -267,7 +269,7 @@ let tests = () => {
 
 	WoodPecker.campaigns()
 		.find({
-			id: [1,2]
+			ids: [1,2]
 		})
 		.then(r => {
 			console.log(r)

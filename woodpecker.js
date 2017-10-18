@@ -46,26 +46,31 @@ class WoodPecker {
 
 	req(url, data) {
 		return new Promise((resolve, reject) => {
+			if (!this.key) {
+				return reject('API key is required. WoodPecker = require(\'woodpecker\')(KEY)')
+			}
 			request({
 				url: this.api + url,
 				headers: {
 					'Authorization': 'Basic ' + new Buffer(this.key).toString('base64') + ':X'
 				},
 				qs: data
-			}).then(resolve).catch(reject)
+			}).then(d => {
+				try {
+					d = JSON.parse(d)
+				} catch (e) {}
+				resolve(d)
+			}).catch(reject)
 		})
 	}
 
 	prospects(s) {
-		return {
+		let p = {
 			newest: () => {
 				return this.req('prospects/newest')
 			},
 			replied: () => {
 				return this.req('prospects/replied')
-			},
-			opened: () => {
-				return this.req('prospects/opened')
 			},
 			opened: () => {
 				return this.req('prospects/opened')
@@ -77,6 +82,7 @@ class WoodPecker {
 				return this.req('prospects/not_contacted')
 			},
 			find: s => {
+				if (!s) s = {}
 				if (s.campaign && s.campaigns) {
 					return Promise.reject('Only use `campaign` or `campaigns`, not both.')
 				}
@@ -87,8 +93,8 @@ class WoodPecker {
 				}
 
 				if (s.campaigns) {
-					if (!(s.s instanceof Array)) {
-						search.campaigns = [s.campaigns]
+					if (!(s.campaigns instanceof Array)) {
+						s.campaigns = [s.campaigns]
 					}
 					s.campaigns_id = s.campaigns.join(',')
 					delete s.campaigns
@@ -115,9 +121,9 @@ class WoodPecker {
 					delete s.interest
 				}
 
-				if (s.contact) {
-					s.contacted = s.contact ? '1' : '0'
-					delete s.contact
+				if (s.contacted) {
+					s.contacted = s.contacted ? '1' : '0'
+					delete s.contacted
 				}
 
 				if (s.updated) {
@@ -147,15 +153,15 @@ class WoodPecker {
 				if (s.diff && s.diff.type) {
 					if (typeof s.diff.data == 'string') {
 						s.diff = {
-							op: s.diff.substr(0,1),
-							date: s.diff(1),
+							op: s.diff.data.substr(0,1),
+							date: s.diff.data.substr(1),
 							type: s.diff.type
 						}
 						if (s.diff.op != '<' && s.diff.op != '>') {
 							return Promise.reject('Invalid date operation', s.diff.op)
 						}
 					}
-					switch (s.diff) {
+					switch (s.diff.type) {
 						case 'updated':
 							s.diff.type = 'updated'
 							break
@@ -166,8 +172,8 @@ class WoodPecker {
 							s.diff.type = 'last_opened'
 							break
 						case 'clicked':
-							if (s.activity) {
-								return Promise.reject('Opened activity requires the `activity` param')
+							if (s.activity != this.activity.CLICKED) {
+								return Promise.reject('Clicked activity requires the `activity` param')
 							}
 							s.diff.type = 'last_clicked'
 							break
@@ -176,7 +182,7 @@ class WoodPecker {
 							break
 					}
 
-					s.diff = s.diff.type + s.diff.op + moment(s.diff.date)
+					s.diff = s.diff.type + s.diff.data.op + moment(s.diff.data.date).format('YYYY-MM-DDTHH:mm:ssZZ')
 				}
 
 				let fieldMap = {
@@ -217,6 +223,9 @@ class WoodPecker {
 							s.search += (s.search ? ',' : '') + fieldMap[f] + '=' + s[f]
 						}
 					}
+				}
+				if (!s.search) {
+					delete s.search
 				}
 
 				for (let f in fieldMap) {
@@ -283,21 +292,43 @@ class WoodPecker {
 				}
 				delete s.$sort
 
-				if (s.limit) {
-					s.per_page = s.limit
-					delete s.limit
+				if (s.$limit) {
+					s.per_page = s.$limit
+					delete s.$limit
+				}
+
+				if (parseInt(s.per_page, 10) > 500) {
+					return Promise.reject('Maximum per page limit is 500. Default is 100.')
+				}
+
+				if (!s.per_page) {
+					s.per_page = 100
 				}
 
 				if (s.per_page) {
 					s.per_page = parseInt(s.per_page, 10)
 				}
 
-				if (s.page) {
-					s.page = parseInt(s.page, 10)
+				if (s.$page) {
+					s.page = parseInt(s.$page, 10)
+					delete s.$page
 				}
 
-				if (parseInt(s.per_page, 10) > 500) {
-					return Promise.reject('Maximum per page limit is 500. Default is 100.')
+				if (s.$skip) {
+					s.page = parseInt(Math.floor(s.$skip / s.per_page), 10)
+					delete s.$skip
+				}
+
+				if (s.per_page) {
+					let go = false
+					for (let i in s) {
+						if (i != 'per_page') {
+							go = true
+						}
+					}
+					if (!go) {
+						return Promise.reject('Limit requires some sort of query to filter')
+					}
 				}
 
 				return this.req('prospects', s)
@@ -307,16 +338,55 @@ class WoodPecker {
 			},
 			addToList: () => {
 
+			},
+			edit: (prospects, campaign, update) => {
+				let data = {
+					prospects: prospects,
+					update: update ? true : false
+				}
+
+				if (campaign) {
+					data.campaign = {
+						campaign_id: campaign
+					}
+					return this.req('add_prospects_campaign', data)
+				} else {
+					return this.req('add_prospects_list', data)
+				}
+			},
+			blacklist: prospects => {
+				let data = {
+					prospect: prospect
+				}
+
+				return this.req('stop_followups', data)
 			}
 		}
+
+		p.add = p.edit
+
+		return p
 	}
 
-	campaigns(s) {
-		return this.req('campaign_list', s)
-	}
+	campaigns() {
+		return {
+			find: s => {
+				if (!s) s = {}
+				if (s.ids) {
+					s.id = s.ids
+					delete s.ids
+				}
 
-	prospect() {
+				if (s.id) {
+					if (!(s.id instanceof Array)) {
+						s.id = [s.id]
+					}
+					s.id = s.id.join(',')
+				}
 
+				return this.req('campaign_list', s)
+			}
+		}
 	}
 }
 
