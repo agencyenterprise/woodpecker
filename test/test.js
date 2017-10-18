@@ -210,6 +210,20 @@ describe('WoodPecker', () => {
 			})
 		})
 
+		it('should not allow invalid date operations', () => {
+			return new Promise((resolve, reject) => {
+				WoodPecker.prospects()
+					.find({
+						updated: {
+							op: '-',
+							date: new Date
+						}
+					})
+					.then(reject)
+					.catch(resolve)
+			})
+		})
+
 		it('should show require activity when using opened', () => {
 			return new Promise((resolve, reject) => {
 				WoodPecker.prospects()
