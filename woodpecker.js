@@ -57,7 +57,6 @@ class WoodPecker {
 				qs: data,
 				method: method || 'GET'
 			}).then(d => {
-				console.log(d)
 				try {
 					d = JSON.parse(d)
 				} catch (e) {}

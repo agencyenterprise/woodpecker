@@ -4,3 +4,5 @@ db/*
 debug.sh
 test.sh
 debug.js
+coverage/*
+codecov.sh
