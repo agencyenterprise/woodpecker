@@ -133,7 +133,7 @@ class WoodPecker {
 					delete s.campaigns
 				}
 
-				if (s.campaign && s.campaigns) {
+				if (s.id && s.ids) {
 					return Promise.reject('Only use `id` or `ids`, not both.')
 				}
 
@@ -154,7 +154,7 @@ class WoodPecker {
 					delete s.interest
 				}
 
-				if (s.contacted) {
+				if (s.contacted === false || s.contacted === true) {
 					s.contacted = s.contacted ? '1' : '0'
 					delete s.contacted
 				}
@@ -217,9 +217,6 @@ class WoodPecker {
 							}
 							s.diff.type = 'last_clicked'
 							break
-						default:
-							return Promise.reject('Invalid diff type', s.diff.type)
-							break
 					}
 
 					s.diff = s.diff.type + s.diff.op + moment(s.diff.date).format('YYYY-MM-DDTHH:mm:ssZZ')
@@ -281,12 +278,12 @@ class WoodPecker {
 				if (!s.sort && s.$sort) {
 					s.sort = ''
 					for (let f in sortMap) {
-						if (s.$sort[f]) {
+						if (typeof s.$sort[f] != 'undefined' && s.$sort[f] != '') {
 							if (f == 'opened' && s.activity != this.activity.OPENED) {
-								return Promise.reject('Opened sort requires the `activity` param set to `OPENED`')
+								return Promise.reject('Opened sort requires the `activity` param set to `OPENED`. Currently set to ', s.activity)
 							}
 							if (f == 'clicked' && s.activity != this.activity.CLICKED) {
-								return Promise.reject('Clicked sort requires the `activity` para set to `CLICKED`')
+								return Promise.reject('Clicked sort requires the `activity` param set to `CLICKED`. Currently set to ', s.activity)
 							}
 
 							let direction

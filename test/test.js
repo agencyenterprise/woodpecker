@@ -77,17 +77,28 @@ describe('WoodPecker', () => {
 			})
 		})
 
+		it('should not allow id and ids', () => {
+			return new Promise((resolve, reject) => {
+				WoodPecker.prospects()
+					.find({
+						id: true,
+						ids: true
+					})
+					.then(reject)
+					.catch(resolve)
+			})
+		})
+
 		it('should not allow campaign and campaigns', () => {
 			return new Promise((resolve, reject) => {
 				WoodPecker.prospects()
 					.find({
 						campaign: true,
 						campaigns: true
-						})
+					})
 					.then(reject)
 					.catch(resolve)
 			})
-
 		})
 
 		it('should find replied status prospects', () => {
@@ -142,6 +153,12 @@ describe('WoodPecker', () => {
 			})
 		})
 
+		it('should find by ids', () => {
+			return WoodPecker.prospects().find({
+				ids: [1,2]
+			})
+		})
+
 		it('should go to page 2', () => {
 			return WoodPecker.prospects().find({
 				$page: 2
@@ -154,11 +171,22 @@ describe('WoodPecker', () => {
 			})
 		})
 
-		it('should not allow limalone', () => {
+		it('should not allow single limit with no query', () => {
 			return new Promise((resolve, reject) => {
 				WoodPecker.prospects()
 					.find({
 						$limit: 1
+					})
+					.then(reject)
+					.catch(resolve)
+			})
+		})
+
+		it('should not allow large limits', () => {
+			return new Promise((resolve, reject) => {
+				WoodPecker.prospects()
+					.find({
+						$limit: 501
 					})
 					.then(reject)
 					.catch(resolve)
@@ -179,17 +207,6 @@ describe('WoodPecker', () => {
 					op: '>',
 					date: new Date
 				}
-			})
-		})
-
-		it('should throw invalid diff type', () => {
-			return new Promise((resolve, reject) => {
-				WoodPecker.prospects()
-					.find({
-						opened: '-2017-01-01'
-					})
-					.then(reject)
-					.catch(resolve)
 			})
 		})
 
@@ -260,6 +277,54 @@ describe('WoodPecker', () => {
 				snippet14: '',
 				snippet15: ''
 			})
+		})
+
+		it('should not allow opened sort without opened activity', () => {
+			return new Promise((resolve, reject) => {
+				WoodPecker.prospects()
+					.find({
+						$sort: {
+							opened: 1
+						},
+						activity: WoodPecker.activity.CLICKED
+					})
+					.then(reject)
+					.catch(resolve)
+			})
+		})
+
+		it('should not allow clicked sort without clicked activity', () => {
+			return new Promise((resolve, reject) => {
+				WoodPecker.prospects()
+					.find({
+						$sort: {
+							clicked: 1
+						},
+						activity: WoodPecker.activity.OPENED
+					})
+					.then(reject)
+					.catch(resolve)
+			})
+		})
+
+		it('should allow opened sort with opened activity', () => {
+			return WoodPecker.prospects()
+				.find({
+					$sort: {
+						opened: 1
+					},
+					activity: WoodPecker.activity.OPENED
+				})
+		})
+
+		it('should allow clicked sort with clicked activity', () => {
+			return WoodPecker.prospects()
+				.find({
+					$sort: {
+						clicked: 1
+					},
+					activity: WoodPecker.activity.CLICKED
+				})
 		})
 
 		it('should find and sort using string', () => {
