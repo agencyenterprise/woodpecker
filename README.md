@@ -27,16 +27,16 @@ The API uses Promises for all interaction.
 const Woodpecker = require('woodpecker-api')('KEY')
 
 Woodpecker.prospects()
-	.find({
-		firstName: 'd',
-		$limit: 1
-	})
-	.then(d => {
-		console.log(d)
-	})
-	.catch(e => {
-		console.log(e)
-	})
+  .find({
+    firstName: 'd',
+    $limit: 1
+  })
+  .then(d => {
+    console.log(d)
+  })
+  .catch(e => {
+    console.log(e)
+  })
 ```
 
 ---
@@ -111,170 +111,152 @@ Woodpecker.prospects().find()
 
 ```js
 Woodpecker.prospects()
-	.find({
-		campaign: 1
-	})
+  .find({
+    campaign: 1
+  })
 
 Woodpecker.prospects()
-	.find({
-		campaigns: [1,2,3]
-	})
+  .find({
+    campaigns: [1,2,3]
+  })
 ```
 
 ### To browse prospects of a specific status:
 
 ```js
 Woodpecker.prospects()
-	.find({
-		status: Woodpecker.pstatus.REPLIED
-	})
+  .find({
+    status: Woodpecker.pstatus.REPLIED
+  })
 
 Woodpecker.prospects()
-	.find({
-		campaign: 22,
-		status: Woodpecker.pstatus['TO-CHECK']
-	})
+  .find({
+    campaign: 22,
+    status: Woodpecker.pstatus['TO-CHECK']
+  })
 ```
 ### To browse prospects that performed a specific action:
 
 ```js
 Woodpecker.prospects()
-	.find({
-		activity: Woodpecker.activity.OPENED
-	})
+  .find({
+    activity: Woodpecker.activity.OPENED
+  })
 
 Woodpecker.prospects()
-	.find({
-		activity: Woodpecker.activity.OPENED,
-		status: Woodpecker.status.REPLIED
-	})
+  .find({
+    activity: Woodpecker.activity.OPENED,
+    status: Woodpecker.status.REPLIED
+  })
 ```
 
 ### To browse interest rate:
 
 ```js
 Woodpecker.prospects()
-	.find({
-		campaign: 10074,
-		interest: Woodpecker.interest.INTERESTED
-	})
+  .find({
+    campaign: 10074,
+    interest: Woodpecker.interest.INTERESTED
+  })
 ```
 
 ### To browse a list of prospects who were or were not contacted:
 
 ```js
 Woodpecker.prospects()
-	.find({
-		contacted: false
-	})
+  .find({
+    contacted: false
+  })
 ```
 
 ### To browse results of prospects search:
 
 ```js
 Woodpecker.prospects()
-	.find({
-		firstName: 'devin',
-		lastName: 'smith',
-		email: '',
-		company: '',
-		industry: '',
-		website: '',
-		tags: '',
-		title: '',
-		phone: '',
-		address: '',
-		city: '',
-		state: '',
-		country: ''
-	})
+  .find({
+    firstName: 'devin',
+    lastName: 'smith',
+    email: '',
+    company: '',
+    industry: '',
+    website: '',
+    tags: '',
+    title: '',
+    phone: '',
+    address: '',
+    city: '',
+    state: '',
+    country: ''
+  })
 ```
 
 ### To browse data of a specific prospect:
 
 ```js
 Woodpecker.prospects()
-	.find({
-		id: 2225
-	})
+  .find({
+    id: 2225
+  })
 ```
 
 ### To browse a specific page of data search:
 
 ```js
 Woodpecker.prospects()
-	.find({
-		$page: 2
-	})
+  .find({
+    $page: 2
+  })
 Woodpecker.prospects()
-	.find({
-		$limit: 20
-	})
+  .find({
+    $limit: 20
+  })
 Woodpecker.prospects()
-	.find({
-		$skip: 100
-	})
+  .find({
+    $skip: 100
+  })
 Woodpecker.prospects()
-	.find({
-		$page: 2,
-		$limit: 20,
-		status: Woodpecker.pstatus.REPLIED
-	})
+  .find({
+    $page: 2,
+    $limit: 20,
+    status: Woodpecker.pstatus.REPLIED
+  })
 ```
 
 ### To sort results:
 
 ```js
 Woodpecker.prospects()
-	.find({
-		firstName: 'devin',
-		sort: '+first_name,+id,+country',
-	})
+  .find({
+    firstName: 'devin',
+    sort: '+first_name,+id,+country',
+  })
 
 Woodpecker.prospects()
-	.find({
-		firstName: 'devin',
-		$sort: {
-			id: 1, // true, ASC, +, or anything else
-			firstName: -1, // false, DESC, -
-			lastName: 1,
-			replied: 1,
-			status: 1,
-			updated: 1,
-			email: 1,
-			company: 1,
-			industry: 1,
-			website: 1,
-			tags: 1,
-			title: 1,
-			phone: 1,
-			address: 1,
-			city: 1,
-			state: 1,
-			country: 1,
-			// requires activity.OPENED
-			//opened: 1
-			// requires activity.CLICKED
-			//clicked: 1
-		}
-	})
+  .find({
+    firstName: 'devin',
+    $sort: {
+      id: 1,
+      firstName: -1,
+      lastName: -1
+    }
+  })
 ```
 
 ### To browse only the data updated after specific date (diff):
 
 ```js
 Woodpecker.prospects()
-	.find({
-		updated: {
-			op: '>',
-			date: new Date
-		}
-	})
+  .find({
+    updated: {
+      op: '>',
+      date: new Date
+    }
+  })
 
 Woodpecker.prospects()
-	.find({
-		opened: '>2017-01-01'
-	})
+  .find({
+    opened: '>2017-01-01'
+  })
 ```
 
 ### Aliases / Shortcuts
@@ -301,23 +283,23 @@ Woodpecker.campaigns().find()
 
 ```js
 Woodpecker.campaigns()
-	.find({
-		status: Woodpecker.cstatus.RUNNING
-	})
+  .find({
+    status: Woodpecker.cstatus.RUNNING
+  })
 ```
 
 ### To get the details of a specific campaign:
 
 ```js
 Woodpecker.campaigns()
-	.find({
-		id: 1
-	})
+  .find({
+    id: 1
+  })
 
 Woodpecker.campaigns()
-	.find({
-		ids: [1,2]
-	})
+  .find({
+    ids: [1,2]
+  })
 ```
 
 ---
