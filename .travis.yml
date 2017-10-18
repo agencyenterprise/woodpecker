@@ -1,10 +1,13 @@
 language: node_js
-node_js: "8"
+node_js:
+  - "8"
+  - "7"
+  - "6"
 env:
   global:
     secure: mC4exrsf+FtDSSEZu5sMYUw9qlZdghWfXQoYwuwWVTuhEk+Kf6osVc8a6++kCpJOXFo7FFVHm7b3CRz0O++Jx32xsyta2jfsm6aUzqWNe4+oBHrx8Z3sJrp0PsayEXH5v3cuD4YfZfvSv7ccFB9uAqJCYaq5vs4QkpiDUzWIMipTB+ijlZBcC8B9o7mh37ldIfVZeixMomn9l9abXfu20laXstQ/EubbjoHf3JTGq8juO3rBhiDBkJZFkaTXylk+pt/mSW3Cn4qyq8lZQxTFN9L1ZPREV8Jh+QYJ8X2A+jpFvUUoeYiHFLGHcgO3R/HV+1otr4W4hmzuDIf47hgjaCviJwlKbPZHTRlCiQnDIEWgOlHAtZXz7VQw2K0iLvqqJ6qexcOe6/LzScsabmDdEmsX1ju7uou4III6ceTPrf9a0glmDmyKZge/4+297WS6i6F095s376kXoaFLKD/SjK6j4ES1O+zHk1de2pJelI4SNHjCpdX0H1l4fsU2VzWQ1jIeRIvqMJgV53spXcJlcjKs9HdS7G8ukqPvKaDuKCQf20eL58JRd8A406Xfi70EYjQjH+WJEyaE4+Icv8NAN6XJnAL8PoSE847omctX83z6uRQHasTGs2ZTf3rnF0okKNZ9xPp3Fa2ddHuO+pneOmdSqx+GF8PWviwCwG/whnw=
 install:
-  - npm install -g codecov istanbul
+  - npm install -g codecov istanbul mocha
 script:
-  - istanbul cover ./node_modules/mocha/bin/_mocha --reporter lcovonly -- -R spec
+  - istanbul cover mocha --reporter lcovonly -- -R spec
   - codecov
