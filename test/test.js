@@ -14,7 +14,6 @@ describe('Woodpecker', function() {
     return new Promise((resolve, reject) => {
       Woodpecker.campaigns().find()
         .then(d => {
-          console.log('campaign', d[0])
           campaign = d[0].id
           resolve()
         })
