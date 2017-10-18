@@ -376,9 +376,7 @@ class Woodpecker {
           return new Promise((resolve, reject) => {
             this.prospects().find({email: id, $limit: 1})
               .then(d => {
-                if (!d || !d[0]) {
-                  return reject('Could not find ', id)
-                }
+                if (!d || !d[0]) return reject('Could not find ', id)
                 return del(d[0].id)
               })
               .then(resolve)
@@ -431,9 +429,7 @@ class Woodpecker {
           return new Promise((resolve, reject) => {
             this.prospects().find({id: prospect})
               .then(d => {
-                if (!d || !d[0]) {
-                  return reject('Could not find ' + prospect)
-                }
+                if (!d || !d[0]) return reject('Could not find ' + prospect)
                 return bl(d[0].email)
               })
               .then(resolve)
