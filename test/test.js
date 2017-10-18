@@ -4,82 +4,78 @@ if (!process.env.WOODPECKER_KEY) {
 
 const
   assert = require('assert')
-  WoodPecker = require('../woodpecker')(process.env.WOODPECKER_KEY)
+  Woodpecker = require('../woodpecker')(process.env.WOODPECKER_KEY)
 
-describe('WoodPecker', () => {
-  let time = 5000
-  let slowDownTest = p => {
-    return new Promise((resolve, reject) => {
-      p
-        .then(() => {
-          setTimeout(resolve, time)
-        })
-        .catch(() => {
-          setTimeout(reject, time)
-        })
-    })
-  }
-
+describe('Woodpecker', function() {
+  this.timeout(10000)
+  let campaign
   describe('#campaigns', () => {
     it('should find a campaign', () => {
-      return WoodPecker.campaigns().find()
+      return new Promise((resolve, reject) => {
+        Woodpecker.campaigns().find()
+          .then(d => {
+            campaign = d.id
+            resolve()
+          })
+          .catch(reject)
+      })
     })
 
     it('should find running campaigns', () => {
-      return WoodPecker.campaigns()
+      return Woodpecker.campaigns()
         .find({
-          status: WoodPecker.cstatus.RUNNING
+          status: Woodpecker.cstatus.RUNNING
         })
     })
 
     it('should find by id', () => {
-      return WoodPecker.campaigns()
+      return Woodpecker.campaigns()
         .find({
           id: 1
         })
     })
 
     it('should find by ids', () => {
-      return WoodPecker.campaigns()
+      return Woodpecker.campaigns()
         .find({
           ids: [1, 2]
         })
     })
 
     it('should find by status', () => {
-      return WoodPecker.campaigns()
+      return Woodpecker.campaigns()
         .find({
-          status: WoodPecker.cstatus.RUNNING
+          status: Woodpecker.cstatus.RUNNING
         })
     })
   })
 
   describe('#prospects', () => {
     it('should find all prospects', () => {
-      return WoodPecker.prospects().find()
+      return Woodpecker.prospects().find()
     })
 
     it('should find a campaign prospect', () => {
-      return WoodPecker.prospects().find({
+      return Woodpecker.prospects().find({
         campaign: 1
       })
     })
 
     it('should find multiple campaigns prospect', () => {
-      return WoodPecker.prospects().find({
+      return Woodpecker.prospects().find({
         campaign: [1]
       })
     })
 
     it('should find multiple campaigns prospect with array plural', () => {
-      return WoodPecker.prospects().find({
+      return Woodpecker.prospects().find({
         campaigns: [1]
       })
     })
 
     it('should not allow id and ids', () => {
       return new Promise((resolve, reject) => {
-        WoodPecker.prospects()
+        Woodpecker.prospects()
           .find({
             id: true,
             ids: true
@@ -91,7 +87,7 @@ describe('WoodPecker', () => {
 
     it('should not allow campaign and campaigns', () => {
       return new Promise((resolve, reject) => {
-        WoodPecker.prospects()
+        Woodpecker.prospects()
           .find({
             campaign: true,
             campaigns: true
@@ -102,78 +98,78 @@ describe('WoodPecker', () => {
     })
 
     it('should find replied status prospects', () => {
-      return WoodPecker.prospects().find({
-        status: WoodPecker.pstatus.REPLIED
+      return Woodpecker.prospects().find({
+        status: Woodpecker.pstatus.REPLIED
       })
     })
 
     it('should find to check status', () => {
-      return WoodPecker.prospects().find({
+      return Woodpecker.prospects().find({
         campaign: 1,
-        status: WoodPecker.pstatus['TO-CHECK']
+        status: Woodpecker.pstatus['TO-CHECK']
       })
     })
 
     it('should find paused status', () => {
-      return WoodPecker.prospects().find({
+      return Woodpecker.prospects().find({
         campaign: 1,
-        status: WoodPecker.pstatus['PAUSED']
+        status: Woodpecker.pstatus['PAUSED']
       })
     })
 
     it('should find opened activity', () => {
-      return WoodPecker.prospects().find({
-        activity: WoodPecker.activity.OPENED
+      return Woodpecker.prospects().find({
+        activity: Woodpecker.activity.OPENED
       })
     })
 
     it('should find opened and replied', () => {
-      return WoodPecker.prospects().find({
-        activity: WoodPecker.activity.OPENED,
-        status: WoodPecker.pstatus.REPLIED
+      return Woodpecker.prospects().find({
+        activity: Woodpecker.activity.OPENED,
+        status: Woodpecker.pstatus.REPLIED
       })
     })
 
     it('should find opened in a campaign', () => {
-      return WoodPecker.prospects().find({
+      return Woodpecker.prospects().find({
         campaign: 1,
-        interest: WoodPecker.interest.INTERESTED
+        interest: Woodpecker.interest.INTERESTED
       })
     })
 
     it('should find not contacted', () => {
-      return WoodPecker.prospects().find({
+      return Woodpecker.prospects().find({
         contacted: false
       })
     })
 
     it('should find by id', () => {
-      return WoodPecker.prospects().find({
+      return Woodpecker.prospects().find({
         id: 2225
       })
     })
 
     it('should find by ids', () => {
-      return WoodPecker.prospects().find({
+      return Woodpecker.prospects().find({
         ids: [1,2]
       })
     })
 
     it('should go to page 2', () => {
-      return WoodPecker.prospects().find({
+      return Woodpecker.prospects().find({
         $page: 2
       })
     })
 
     it('should go to page 2 with skip', () => {
-      return WoodPecker.prospects().find({
+      return Woodpecker.prospects().find({
         $skip: 10
       })
     })
 
     it('should not allow single limit with no query', () => {
       return new Promise((resolve, reject) => {
-        WoodPecker.prospects()
+        Woodpecker.prospects()
           .find({
             $limit: 1
           })
@@ -184,7 +180,7 @@ describe('WoodPecker', () => {
 
     it('should not allow large limits', () => {
       return new Promise((resolve, reject) => {
-        WoodPecker.prospects()
+        Woodpecker.prospects()
           .find({
             $limit: 501
           })
@@ -194,15 +190,15 @@ describe('WoodPecker', () => {
     })
 
     it('should show replied on page 2 and only 20', () => {
-      return WoodPecker.prospects().find({
+      return Woodpecker.prospects().find({
         $page: 2,
         $limit: 20,
-        status: WoodPecker.pstatus.REPLIED
+        status: Woodpecker.pstatus.REPLIED
       })
     })
 
     it('should show updated after today', () => {
-      return WoodPecker.prospects().find({
+      return Woodpecker.prospects().find({
         updated: {
           op: '>',
           date: new Date
@@ -212,7 +208,7 @@ describe('WoodPecker', () => {
 
     it('should not allow invalid date operations', () => {
       return new Promise((resolve, reject) => {
-        WoodPecker.prospects()
+        Woodpecker.prospects()
           .find({
             updated: {
               op: '-',
@@ -226,7 +222,7 @@ describe('WoodPecker', () => {
 
     it('should show require activity when using opened', () => {
       return new Promise((resolve, reject) => {
-        WoodPecker.prospects()
+        Woodpecker.prospects()
           .find({
             opened: '>2017-01-01'
           })
@@ -236,15 +232,15 @@ describe('WoodPecker', () => {
     })
 
     it('should show opened after today using string', () => {
-      return WoodPecker.prospects().find({
+      return Woodpecker.prospects().find({
         opened: '>2017-01-01',
-        activity: WoodPecker.activity.OPENED
+        activity: Woodpecker.activity.OPENED
       })
     })
 
     it('should show require activity when using opened', () => {
       return new Promise((resolve, reject) => {
-        WoodPecker.prospects()
+        Woodpecker.prospects()
           .find({
             clicked: '>2017-01-01'
           })
@@ -254,14 +250,14 @@ describe('WoodPecker', () => {
     })
 
     it('should show clicked after today using string', () => {
-      return WoodPecker.prospects().find({
+      return Woodpecker.prospects().find({
         clicked: '>2017-01-01',
-        activity: WoodPecker.activity.CLICKED
+        activity: Woodpecker.activity.CLICKED
       })
     })
 
     it('find devin smith', () => {
-      return WoodPecker.prospects().find({
+      return Woodpecker.prospects().find({
         firstName: 'devin',
         lastName: 'smith',
         email: '',
@@ -295,12 +291,12 @@ describe('WoodPecker', () => {
 
     it('should not allow opened sort without opened activity', () => {
       return new Promise((resolve, reject) => {
-        WoodPecker.prospects()
+        Woodpecker.prospects()
           .find({
             $sort: {
               opened: 1
             },
-            activity: WoodPecker.activity.CLICKED
+            activity: Woodpecker.activity.CLICKED
           })
           .then(reject)
           .catch(resolve)
@@ -309,12 +305,12 @@ describe('WoodPecker', () => {
 
     it('should not allow clicked sort without clicked activity', () => {
       return new Promise((resolve, reject) => {
-        WoodPecker.prospects()
+        Woodpecker.prospects()
           .find({
             $sort: {
               clicked: 1
             },
-            activity: WoodPecker.activity.OPENED
+            activity: Woodpecker.activity.OPENED
           })
           .then(reject)
           .catch(resolve)
@@ -322,34 +318,46 @@ describe('WoodPecker', () => {
     })
 
     it('should allow opened sort with opened activity', () => {
-      return WoodPecker.prospects()
+      return Woodpecker.prospects()
         .find({
           $sort: {
             opened: 1
           },
-          activity: WoodPecker.activity.OPENED
+          activity: Woodpecker.activity.OPENED
         })
     })
 
     it('should allow clicked sort with clicked activity', () => {
-      return WoodPecker.prospects()
+      return Woodpecker.prospects()
         .find({
           $sort: {
             clicked: 1
           },
-          activity: WoodPecker.activity.CLICKED
+          activity: Woodpecker.activity.CLICKED
         })
     })
 
     it('should find and sort using string', () => {
-      return WoodPecker.prospects().find({
+      return Woodpecker.prospects().find({
         firstName: 'devin',
         sort: '+first_name,+id,+country'
       })
     })
 
+    it('should not allow id and limit', () => {
+      return new Promise((resolve, reject) => {
+          Woodpecker.prospects()
+            .find({
+              id: 1,
+              $limit: 1
+            })
+            .then(reject)
+            .catch(resolve)
+      })
+    })
+
     it('should find and sort using all data', () => {
-      return WoodPecker.prospects().find({
+      return Woodpecker.prospects().find({
         firstName: 'devin',
         $sort: {
           id: 1,
@@ -374,31 +382,186 @@ describe('WoodPecker', () => {
     })
 
     it('should get newest', () => {
-      return WoodPecker.prospects().newest()
+      return Woodpecker.prospects().newest()
     })
 
     it('should get replied', () => {
-      return WoodPecker.prospects().replied()
+      return Woodpecker.prospects().replied()
     })
 
     it('should get opened', () => {
-      return WoodPecker.prospects().opened()
+      return Woodpecker.prospects().opened()
     })
 
     it('should get clicked', () => {
-      return WoodPecker.prospects().clicked()
+      return Woodpecker.prospects().clicked()
     })
 
     it('should get notContacted', () => {
-      return WoodPecker.prospects().notContacted()
+      return Woodpecker.prospects().notContacted()
+    })
+  })
+
+  describe('#editing', () => {
+
+    it('should blacklist by id', () => {
+      return new Promise((resolve, reject) => {
+        Woodpecker.prospects()
+        	.add({
+        		firstName: 'mr',
+        		lastName: 'mr test',
+        		email: 'a' + Math.random() * 1000 + '@somedomain.com'
+        	})
+        	.then(d => {
+            Woodpecker.prospects()
+            	.blacklist(d.prospects[0].id)
+              .then(resolve)
+              .catch(reject)
+        	})
+        	.catch(reject)
+        })
+    })
+
+    it('should blacklist by email', () => {
+      return new Promise((resolve, reject) => {
+        Woodpecker.prospects()
+          .add({
+            firstName: 'mr',
+            lastName: 'mr test',
+            email: 'a' + Math.random() * 1000 + '@somedomain.com'
+          })
+          .then(d => {
+            Woodpecker.prospects()
+              .blacklist(d.prospects[0].email)
+              .then(resolve)
+              .catch(reject)
+          })
+          .catch(reject)
+        })
+    })
+
+    it('should add and then update prospect', () => {
+      return new Promise((resolve, reject) => {
+        Woodpecker.prospects()
+          .add({
+            firstName: 'mr',
+            lastName: 'mr test',
+            email: 'a' + Math.random() * 1000 + '@somedomain.com'
+          })
+          .then(d => {
+            Woodpecker.prospects()
+              .edit({
+                id: d.prospects[0].id,
+                firstName: 'ms',
+                lastName: 'ms test',
+                email: d.prospects[0].email
+              })
+              .then(resolve)
+              .catch(reject)
+          })
+          .catch(reject)
+        })
+    })
+
+    it('should delete by email', () => {
+      return new Promise((resolve, reject) => {
+        Woodpecker.prospects()
+          .add({
+            firstName: 'mr',
+            lastName: 'mr test',
+            email: 'a' + Math.random() * 1000 + '@somedomain.com'
+          })
+          .then(d => {
+            Woodpecker.prospects()
+              .delete(d.prospects[0].email)
+              .then(resolve)
+              .catch(reject)
+          })
+          .catch(reject)
+        })
+    })
+
+    it('should delete by id', () => {
+      return new Promise((resolve, reject) => {
+        Woodpecker.prospects()
+          .add({
+            firstName: 'mr',
+            lastName: 'mr test',
+            email: 'a' + Math.random() * 1000 + '@somedomain.com'
+          })
+          .then(d => {
+            Woodpecker.prospects()
+              .delete(d.prospects[0].id)
+              .then(resolve)
+              .catch(reject)
+          })
+          .catch(reject)
+        })
+    })
+
+    it('should add or update', () => {
+      return new Promise((resolve, reject) => {
+        Woodpecker.prospects()
+          .edit({
+            firstName: 'mr',
+            lastName: 'mr test',
+            email: 'a' + Math.random() * 1000 + '@somedomain.com'
+          })
+          .then(d => {
+            Woodpecker.prospects()
+              .delete(d.prospects[0].id)
+              .then(resolve)
+              .catch(reject)
+          })
+          .catch(reject)
+        })
+    })
+
+    it('should add a prospect to a campaign', () => {
+      return Woodpecker.prospects()
+        .add({
+          firstName: 'mr',
+          lastName: 'mr test',
+          email: 'a' + Math.random() * 1000 + '@somedomain.com'
+        }, campaign)
+    })
+
+    it('should delete a prospect from a campaign', () => {
+      return Woodpecker.prospects()
+        .delete(1, campaign)
+    })
+
+    it('should add or update multiple', () => {
+      return new Promise((resolve, reject) => {
+        Woodpecker.prospects()
+          .edit([
+            {
+              firstName: 'mr2',
+              lastName: 'mr test2',
+              email: 'a' + Math.random() * 1000 + '@somedomain.com'
+            },
+            {
+              firstName: 'mr3',
+              lastName: 'mr test3',
+              email: 'a' + Math.random() * 1000 + '@somedomain.com'
+            }
+          ])
+          .then(d => {
+            Woodpecker.prospects()
+              .delete(d.prospects[0].id)
+              .then(resolve)
+              .catch(reject)
+          })
+          .catch(reject)
+        })
     })
   })
 
   describe('#global', () => {
     it('should not allow request without key', () => {
       return new Promise((resolve, reject) => {
-        WoodPecker.key = null
-        WoodPecker.campaigns()
+        Woodpecker.key = null
+        Woodpecker.campaigns()
           .find()
           .then(reject)
           .catch(resolve)

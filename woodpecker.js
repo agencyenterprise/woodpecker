@@ -49,14 +49,22 @@ class Woodpecker {
       if (!this.key) {
         return reject('API key is required. Woodpecker = require(\'woodpecker-api\')(KEY)')
       }
-      request({
+      method = method || 'GET'
+
+      let r = {
         url: this.api + url,
         headers: {
           'Authorization': 'Basic ' + new Buffer(this.key).toString('base64') + ':X'
         },
-        qs: data,
-        method: method || 'GET'
-      }).then(d => {
+        method: method
+      }
+
+      if (method == 'POST') {
+        r.body = JSON.stringify(data)
+      } else {
+        r.qs = data
+      }
+      request(r).then(d => {
         try {
           d = JSON.parse(d)
         } catch (e) {}
@@ -333,13 +341,44 @@ class Woodpecker {
           }
         }
 
+
+        if (s.id && s.per_page) {
+          return Promise.reject('Can not limit when searching by id')
+        }
+
         return this.req('prospects', s)
       },
-
-      /*edit: (prospects, campaign, update) => {
+      delete: (id, campaign) => {
+        if (id.toString() == parseInt(id).toString()) {
+          id = parseInt(id)
+        }
+        let del = ete => {
+          let data = {id: ete}
+          if (campaign) {
+            data.campaigns_id = campaign
+          }
+          return this.req('prospects', data, 'DELETE')
+        }
+        if (typeof id == 'string') {
+          return new Promise((resolve, reject) => {
+            this.prospects().find({email: id, $limit: 1})
+              .then(d => {
+                if (!d || !d[0]) {
+                  return reject('Could not find ', id)
+                }
+                return del(d[0].id)
+              })
+              .then(resolve)
+              .catch(reject)
+          })
+        } else {
+          return del(id)
+        }
+      },
+      edit: (prospects, campaign, noupdate) => {
         let data = {
           prospects: (prospects instanceof Array) ? prospects : [prospects],
-          update: true//update ? true : false
+          update: noupdate ? false : true
         }
 
         for (let p of data.prospects) {
@@ -351,7 +390,6 @@ class Woodpecker {
             }
           }
         }
-        console.log(data)
 
         if (campaign) {
           data.campaign = {
@@ -362,16 +400,41 @@ class Woodpecker {
           return this.req('add_prospects_list', data, 'POST')
         }
       },
-      blacklist: prospects => {
-        let data = {
-          prospect: prospect
+      blacklist: prospect => {
+        if (prospect.toString() == parseInt(prospect).toString()) {
+          prospect = parseInt(prospect)
         }
 
-        return this.req('stop_followups', data)
-      }*/
+        let bl = pr => {
+          let data = {
+            prospect: {
+              email: pr
+            }
+          }
+          return this.req('stop_followups', data, 'POST')
+        }
+
+        if (typeof prospect == 'number') {
+          return new Promise((resolve, reject) => {
+            this.prospects().find({id: prospect})
+              .then(d => {
+                if (!d || !d[0]) {
+                  return reject('Could not find ' + prospect)
+                }
+                return bl(d[0].email)
+              })
+              .then(resolve)
+              .catch(reject)
+          })
+        } else {
+          return bl(prospect)
+        }
+      }
     }
 
-    p.add = p.edit
+    p.add = (prospects, campaign) => {
+      return p.edit(prospects, campaign, true)
+    }
 
     return p
   }

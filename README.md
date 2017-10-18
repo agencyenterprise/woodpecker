@@ -43,7 +43,7 @@ Woodpecker.prospects()
 
 ## API Reference
 
-### prospects.find({query})
+### prospects().find({query})
 
 - **id**: Find by id
 - **ids**: Find by an array of ids
@@ -76,23 +76,37 @@ Woodpecker.prospects()
 - **$sort**: Sort order object. Can be `1`, `ASC` | `true` | `+`, or `-1`, `DESC` | `false` | `-`. Defaults to `ASC`. Available fields:
   - `id`, `firstName`, `lastName`, `replied`, `status`, `updated`, `email`, `company`, `industry`, `website`, `tags`, `title`, `phone`, `address`, `city`, `state`, `country`, `opened` (requires activity.OPENED), `clicked` (requires activity.CLICKED)
 
-### prospects.find().newest()
+### prospects().newest()
 - 100 newest prospects
 
-### prospects.find().replied()
+### prospects().replied()
 - 100 latest prospects who replied to the email
 
-### prospects.find().opened()
+### prospects().opened()
 - 100 latest prospects who opened the email
 
-### prospects.find().clicked()
+### prospects().clicked()
 - 100 latest prospects who clicked on the email`
 
-### prospects.find().notContacted()
-100 latest prospects marked as not contacted
+### prospects().notContacted()
+- 100 latest prospects marked as not contacted
+
+### prospects().add(PROSPECT | [PROSPECT])
+- Accepts either a single prospect or an array of prospects. Available fields: `firstName`, `lastName`, `email`, `company`, `industry`, `website`, `tags`, `title`, `phone`, `address`, `city`, `state`, `country`, `snippet[1-15]`
+
+### prospects().edit(PROSPECT | [PROSPECT])
+- Same as add, but will perform an update if they items exist. Requires `id` for each prospect. All fields mentioned in the request will be updated.
 
 
-### campaigns.find({query})
+
+### prospects().delete(ID | EMAIL)
+- Deletes a prospect by id or email
+
+### prospects().blacklist(ID | EMAIL)
+- Blacklists a prospect by id or email
+
+
+### campaigns().find({query})
 
 - **id**: Find by id
 - **ids**: Find by an array of ids
@@ -302,7 +316,54 @@ Woodpecker.campaigns()
   })
 ```
 
----
+### To add prospects to the campaign:
 
-### Adding, editing, blacklisting
-Coming soon...API doesnt seem to be responding like expected.
+```js
+Woodpecker.prospects().add({
+  firstName: 'mr',
+  lastName: 'mr test',
+  email: 'mrtest@somedomain.com'
+}, 2034)
+```
+
+
+### To add prospects to the prospects list:
+```js
+Woodpecker.prospects().add([{
+  firstName: 'mr',
+  lastName: 'mr test',
+  email: 'mrtest@somedomain.com'
+},{
+  firstName: 'mrs',
+  lastName: 'mrs test',
+  email: 'mrstest@somedomain.com'
+}])
+```
+
+### To edit prospect data:
+
+```js
+Woodpecker.prospects().edit({
+  firstName: 'mr',
+  lastName: 'mr test',
+  email: 'mrtest@somedomain.com'
+})
+```
+
+### To delete the prospect data:
+
+```js
+Woodpecker.prospects().delete('mrtest@somedomain.com')
+```
+
+### To delete the prospect from a campaign:
+
+```js
+Woodpecker.prospects().delete('mrtest@somedomain.com', 2034)
+```
+
+### To change prospect status to BLACKLIST:
+
+```js
+Woodpecker.prospects().blacklist('mrtest@somedomain.com')
+```
